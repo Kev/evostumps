@@ -1,0 +1,7 @@
+EvoStumps
+=========
+
+This package provides an implementation of a decision stumps classifier, where the configuration is tuned by an evolution strategy.
+
+For usage details, run 
+  python ./evostumps.py --help
