@@ -35,7 +35,8 @@ class EvoStumps(object):
         logging.debug("evostumps.__init(%s, %s)" %(str(trainingInputs), str(trainingOutputs)))
         self.inputs = trainingInputs
         self.outputs = trainingOutputs
-        self.classifier = stumsClassifier(trainingInputs, trainingOutputs)
+        initialClassifier = StumpsClassifier(len(trainingInputs[0]))
+        self.optimiser = ClassifierOptimiser(initialClassifier, trainingInput, trainingOutputs)
 
 if __name__ == '__main__':
     optp = OptionParser()
