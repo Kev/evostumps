@@ -22,13 +22,13 @@ import logging
 class ClassifierOptimiser(object):
     """ This class provides an evolution strategy optimiser.
     """
-    def __init__(self, initialConfig, singleChain = True):
+    def __init__(self, wrappedClassifier, singleChain = True):
         """ Create an ES from a given initial config.
             If singleChain is False then solutions from the
             archive are selected to be perturbed (this is very likely
             a bad idea).
         """
-        self.initialConfig = initialConfig
+        self.initialConfig = wrappedClassifier
         self.currentConfig = self.initialConfig
         self.singleChain = singleChain
         self.archive = Archive()
@@ -42,7 +42,6 @@ class ClassifierOptimiser(object):
         else:
             sourceConfig = self.archive.randomMember()
         proposal = sourceConfig.perturb()
-        self.evaluate(proposal)
         if archive.updateWith(proposal):
             self.currentConfig = proposal
         
