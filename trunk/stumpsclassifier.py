@@ -17,6 +17,9 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+import copy
+import logging 
+
 class StumpsClassifier(object):
     """ Stumps Classifier, wrapper around a selection of stumps.
     """
@@ -25,7 +28,30 @@ class StumpsClassifier(object):
             the given config.
         """
         self.numFeatures = numFeatures
-        self.numFeatures = len(self.trainingInput - 1)
+        #poor man's enum
+        self.multiplyStumps, self.addStumps = range(2)
+        self.combinationType = self.addStumps
+        self.weights = []
+        for i in range(numFeatures):
+            self.stumps.append(StumpClassifier(i, 0.5, hardStump=False, beta=1))
+            self.weights.append(1.0 / numFeatures)
+    
+    def numActiveStumps(self):
+        """ Returns the number of active stumps/features.
+        """
+        active = 0
+        for stump in self.stumps:
+            if stump.enabled:
+                active += 1
+        if active == 0:
+            logging.error("stumps classifier has no active stumps")
+            diepleasepython("I should look up how to get python to backtrace 'gracefully'")
+    
+    def adjustedStumpWeight(self, stumpIndex):
+        """ Returns the weight of the stump with the given index, compensating
+            for any inactive stumps.
+        """        
+        return self.weights[stumpIndex] * self.numFeatures / self.numActiveStumps()
     
     def classify(self, inputs):
         """ Classify the provided inputs.
@@ -34,17 +60,27 @@ class StumpsClassifier(object):
         """
         classifications = []
         for input in inputs:
-            for stump in self.config.stumps:
-                classification = 0
+            classification = 0
+            for i in range(len(self.stumps)):
+                stump = self.stumps[i]
                 if stump.enabled:
-                    classification += stump
-                    if stump.hardStump:
-                        if stump.checkGreaterThanThreshold:
-                            stumpClassification = input[stump.feature] > stump.threshold
-                        else:
-                            stumpClassification = input[stump.feature] < stump.threshold
-                    else:
-                        softstumpscrash
+                    stumpContribution = adjustedStumpWeight(i) * stump.classify(input[stump.feature])
+                    if self.combinationType = self.multiplyStumps:
+                        classification *= stumpContribution
+                    else
+                        classifications += stumpContribution
             classifications.append(classification)
+        return classifications
         
-
+    def _perturbInPlace():
+        """ Perturbs the object in place. Private call.
+        """
+        pass
+        
+    def perturb(self):
+        """ Returns a perturbed classifier. Does not affect
+            this object.
+        """
+        newClassifier = copy.deepcopy(self)
+        newClassifier._perturbInPlace()
+        return newClassifier
