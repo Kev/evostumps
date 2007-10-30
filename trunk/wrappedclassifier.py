@@ -21,30 +21,34 @@ class WrappedClassifier(object):
     """ This wraps a classifier in enough MOO to allow it to be optimised
         by the ClassifierOptimiser.
     """
-    def __init__(self, classifier, data):
+    def __init__(self, classifier, inputs, targets):
         """ Construct a wrapper around the specified classifier, using
             the provided data for evaluation
         """
         self.classifier = classifier
-        self.data = data
+        self.inputs = inputs
+        self.targets = targets
+        self._evaluate()
         
     def perturb(self):
         """ Perturbs the contained classifier, evaluates it and returns a
             new WrappedClassifier containing it.
         """
-        newWrapper = WrappedClassifier(self.classifier.perturb(), self.data)
+        newWrapper = WrappedClassifier(self.classifier.perturb(), self.inputs, self.targets)
         newWrapper._evaluate()
         return newWrapper
         
     def _evaluate(self):
         """ Evaluates the performance of the wrapped classifier.
         """
-        results = self.classifier.classify(self.data)
-        self.confusion = [[0,0][0,0]]
+        results = self.classifier.classify(self.inputs)
+        self.confusion = [[0,0],[0,0]]
         for i in range(0,len(results)):
-            self.confusion[self.trainingOutputs[i]][results[i]] += 1
-        self.tpr = confusion[1][1]/sum(confusion[1])
-        self.fpr = confusion[0][0]/sum(confusion[0])
+            type(self.targets[i])
+            type(results[i])
+            self.confusion[self.targets[i]][results[i]] += 1
+        self.tpr = self.confusion[1][1]/sum(self.confusion[1])
+        self.fpr = self.confusion[0][0]/sum(self.confusion[0])
         
     def dominates(self, other):
         """ Test for domination of other.

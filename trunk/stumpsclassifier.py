@@ -19,6 +19,7 @@
 
 import copy
 import logging 
+from stumpclassifier import StumpClassifier
 
 class StumpsClassifier(object):
     """ Stumps Classifier, wrapper around a selection of stumps.
@@ -32,8 +33,10 @@ class StumpsClassifier(object):
         self.multiplyStumps, self.addStumps = range(2)
         self.combinationType = self.addStumps
         self.weights = []
+        self.stumps = []
+        self.threshold = 0.5
         for i in range(numFeatures):
-            self.stumps.append(StumpClassifier(i, 0.5, hardStump=False, beta=1))
+            self.stumps.append(StumpClassifier(i, 0.5, hardStump=False, beta=1.0))
             self.weights.append(1.0 / numFeatures)
     
     def numActiveStumps(self):
@@ -46,6 +49,7 @@ class StumpsClassifier(object):
         if active == 0:
             logging.error("stumps classifier has no active stumps")
             diepleasepython("I should look up how to get python to backtrace 'gracefully'")
+        return active
     
     def adjustedStumpWeight(self, stumpIndex):
         """ Returns the weight of the stump with the given index, compensating
@@ -64,15 +68,18 @@ class StumpsClassifier(object):
             for i in range(len(self.stumps)):
                 stump = self.stumps[i]
                 if stump.enabled:
-                    stumpContribution = adjustedStumpWeight(i) * stump.classify(input[stump.feature])
-                    if self.combinationType = self.multiplyStumps:
+                    stumpContribution = self.adjustedStumpWeight(i) * stump.classify(input[stump.feature])
+                    if self.combinationType == self.multiplyStumps:
                         classification *= stumpContribution
-                    else
-                        classifications += stumpContribution
-            classifications.append(classification)
+                    else:
+                        classification += stumpContribution
+            if classification > self.threshold:
+                classifications.append(1)
+            else:
+                classifications.append(0)
         return classifications
         
-    def _perturbInPlace():
+    def _perturbInPlace(self):
         """ Perturbs the object in place. Private call.
         """
         pass

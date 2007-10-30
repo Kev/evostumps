@@ -18,11 +18,12 @@
 """
 
 import logging
+from archive import Archive
 
 class ClassifierOptimiser(object):
     """ This class provides an evolution strategy optimiser.
     """
-    def __init__(self, wrappedClassifier, singleChain = True):
+    def __init__(self, wrappedClassifier, iterations, singleChain = True):
         """ Create an ES from a given initial config.
             If singleChain is False then solutions from the
             archive are selected to be perturbed (this is very likely
@@ -31,8 +32,13 @@ class ClassifierOptimiser(object):
         self.initialConfig = wrappedClassifier
         self.currentConfig = self.initialConfig
         self.singleChain = singleChain
+        self.iterations = iterations
         self.archive = Archive()
         self.archive.updateWith(self.initialConfig)
+        for i in range(iterations):
+            logging.debug("Iteration %d" % i)
+            self.iteration()
+            logging.debug("Rates TPR: %f FPR: %f" %(self.currentConfig.tpr, self.currentConfig.fpr))
         
     def iteration(self):
         """ Perform an iteration of the optimiser
@@ -42,6 +48,6 @@ class ClassifierOptimiser(object):
         else:
             sourceConfig = self.archive.randomMember()
         proposal = sourceConfig.perturb()
-        if archive.updateWith(proposal):
+        if self.archive.updateWith(proposal):
             self.currentConfig = proposal
         

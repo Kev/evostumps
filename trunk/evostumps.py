@@ -22,27 +22,34 @@ import logging
 from optparse import OptionParser
 import csv
 import sys
+from stumpsclassifier import StumpsClassifier
+from wrappedclassifier import WrappedClassifier
+from classifieroptimiser import ClassifierOptimiser
+
 
 class EvoStumps(object):
     """ EvoStumps is a stumps classifier tuned through an evolutionary algorithm.
     """
-    def __init__(self, trainingInputs, trainingOutputs):
+    def __init__(self, trainingInputs, trainingOutputs, iterations):
         """ Create a classifierand train it with the provided inputs and outputs.
             trainingInputs should be a list of lists.
             trainingOutputs should be a list of desired outputs, with the 
             same indices as the inputs.
+            The classifier will be optimised for the 
+            given number of iterations.
         """
         logging.debug("evostumps.__init(%s, %s)" %(str(trainingInputs), str(trainingOutputs)))
         self.inputs = trainingInputs
-        self.outputs = trainingOutputs
-        initialClassifier = StumpsClassifier(len(trainingInputs[0]))
-        self.optimiser = ClassifierOptimiser(initialClassifier, trainingInput, trainingOutputs)
+        self.targets = trainingOutputs
+        initialClassifier = WrappedClassifier(StumpsClassifier(len(trainingInputs[0])),self.inputs,self.targets)
+        self.optimiser = ClassifierOptimiser(initialClassifier, iterations)
 
 if __name__ == '__main__':
     optp = OptionParser()
     optp.add_option('-q','--quiet', help='set logging to ERROR', action='store_const', dest='loglevel', const=logging.ERROR, default=logging.INFO)
     optp.add_option('-d','--debug', help='set logging to DEBUG', action='store_const', dest='loglevel', const=logging.DEBUG, default=logging.INFO)
     optp.add_option("-t","--training", dest="trainingfile", default="training.csv", help="File containing CSV training data. Final column should contain targets.")
+    optp.add_option("-i","--iteratiosn", dest="iterations", default="100", help="Number of iterations to optimise the classifier.")
     optp.add_option("-s","--test", dest="testfile", default="test.csv", help="File containing CSV test data. Same format as training.")
     opts,args = optp.parse_args()
     
@@ -57,12 +64,16 @@ if __name__ == '__main__':
     logging.debug("Reading file: %s" % opts.trainingfile)
     try:
         for row in reader:
-            inputs.append(row[0:-1])
-            outputs.append(row[-1])
+            inputRow = []
+            for value in row[0:-1]:
+                inputRow.append(float(value))
+            inputs.append(inputRow)
+            outputs.append(int(row[-1]))
             logging.debug(row)
     except csv.Error, e:
         logging.error("Error reading %s, line %d: %s" % (opts.trainingfile, reader.line_num, e))
         sys.exit()
     logging.debug("EOF: %s" % opts.trainingfile)
     logging.debug("Seeding RNG")
-    system = EvoStumps(inputs, outputs)
+    system = EvoStumps(inputs, outputs, int(opts.iterations))
+    logging.info("Bye")

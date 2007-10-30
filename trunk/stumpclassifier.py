@@ -17,6 +17,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+import math
+
 class StumpClassifier(object):
     """ Stump Classifier
     """
@@ -58,9 +60,9 @@ class StumpClassifier(object):
     def softClassify(self, inputValue):
         """ Performs a soft classification on the provided value.
         """
-        return 1 / (1 + e ^ (-self.beta(inputValue - self.threshold)))
+        return 1.0 / (1 + math.e ** (-self.beta ** (inputValue - self.threshold)))
         
-    def perturbInPlace():
+    def perturbInPlace(self):
         """ Perturbs the object in place. 
         """
         pass
