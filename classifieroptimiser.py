@@ -49,5 +49,8 @@ class ClassifierOptimiser(object):
             sourceConfig = self.archive.randomMember()
         proposal = sourceConfig.perturb()
         if self.archive.updateWith(proposal):
+            logging.debug("Accepting solution")
             self.currentConfig = proposal
+        else:
+            logging.debug("Rejecting solution")
         

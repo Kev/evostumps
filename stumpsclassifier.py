@@ -20,6 +20,8 @@
 import copy
 import logging 
 from stumpclassifier import StumpClassifier
+import random
+import sets
 
 class StumpsClassifier(object):
     """ Stumps Classifier, wrapper around a selection of stumps.
@@ -82,7 +84,39 @@ class StumpsClassifier(object):
     def _perturbInPlace(self):
         """ Perturbs the object in place. Private call.
         """
-        pass
+        for i in range(len(self.stumps)):
+            stump = self.stumps[i]
+            if random.random() <= 0.05:
+                stump.enabled = not stump.enabled
+            if random.random() <= 0.1:
+                logging.debug("Stump %d adjusting weight" % i)
+                wantedDiff = random.uniform(-1,1)
+                totalWeight = 0.0
+                for j in self.listDifference(range(len(self.stumps)), [i]):
+                    self.weights[j] += wantedDiff / (len(self.stumps) - 1.0)
+                    if self.weights[j] < 0:
+                        self.weights[j] = 0.0
+                    if self.weights[j] > 1:
+                        self.weights[j] = 1.0
+                        totalWeight += self.weights[j]
+                self.weights[i] = 1 - totalWeight
+            if random.random() <= 0.8:
+                stump.perturbInPlace()
+        logging.debug("Perturbation generates:\n%s" % str(self))
+    
+    def listDifference(self, list1, list2):
+        """ Returns the set difference between two lists
+        """
+        return sets.Set(list1).difference(sets.Set(list2))
+    
+    def doubleEquals(self, double1, double2, tolerance):
+        """ Checks if two doubles are equal within tolerance.
+            Python probably has a method for this which would be better.
+        """
+        zeroTest = double1 - double2            
+        if zeroTest < 0:
+            zeroTest = 0 - zeroTest
+        return zeroTest < tolerance
         
     def perturb(self):
         """ Returns a perturbed classifier. Does not affect
@@ -91,3 +125,8 @@ class StumpsClassifier(object):
         newClassifier = copy.deepcopy(self)
         newClassifier._perturbInPlace()
         return newClassifier
+        
+    def __str__(self):
+        """ str(object) overload.
+        """
+        return "Weights: %s\nStumps: %s" %(str(self.weights), str(self.stumps))

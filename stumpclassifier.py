@@ -18,6 +18,7 @@
 """
 
 import math
+import random
 
 class StumpClassifier(object):
     """ Stump Classifier
@@ -56,14 +57,59 @@ class StumpClassifier(object):
         else:
             classification = 0
         
-        
     def softClassify(self, inputValue):
         """ Performs a soft classification on the provided value.
         """
-        return 1.0 / (1 + math.e ** (-self.beta ** (inputValue - self.threshold)))
+        return 1.0 / (1 + math.e ** (-self.beta * (inputValue - self.threshold)))
+    
+    def _perturbInPlaceSoft(self):
+        """ Perturbs a soft stump in place.
+        """
+        if random.random() < 0.5:
+            newThreshold = -1
+            while newThreshold < 0 or newThreshold > 1:
+                newThreshold = self.threshold + self.laplacian() * 0.1
+            self.threshold = newThreshold
+        else:
+            self.beta += self.laplacian() * 0.1
+            
+    def laplacian(self):
+        sample = math.log(random.random());
+    	if random.random() < 0.5:
+    		sample *= -1.0
+    	return sample;
+    
+    def _perturbInPlaceHard(self):
+        """ Perturbs a hard stump in place.
+        """
+        die
         
     def perturbInPlace(self):
         """ Perturbs the object in place. 
         """
-        pass
+        if self.hardStump:
+            self._perturbInPlaceHard()
+        else:
+            self._perturbInPlaceSoft()
         
+    def __str__(self):
+        """ Overload for str(object).
+        """
+        if self.hardStump:
+            return self._strHard()
+        else:
+            return self._strSoft()
+            
+    def _strHard(self):
+        """ Overload for str(obj) on hard stumps.
+        """
+        if self.checkGreaterThanThreshold:
+            operator += ">"
+        else:
+            operator += "<"
+        return "(Hard) %s %f" %(operator, self.threshold)
+
+    def _strSoft(self):
+        """ Overload for str(obj) on soft stumps.
+        """
+        return "(Soft) Beta:%f Threshold:%f" % (self.beta, self.threshold)
