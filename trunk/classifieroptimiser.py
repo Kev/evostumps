@@ -35,10 +35,23 @@ class ClassifierOptimiser(object):
         self.iterations = iterations
         self.archive = Archive()
         self.archive.updateWith(self.initialConfig)
+        acceptances = 0
+        rejections = 0
         for i in range(iterations):
-            logging.debug("Iteration %d" % i)
-            self.iteration()
-            logging.debug("Rates TPR: %f FPR: %f" %(self.currentConfig.tpr, self.currentConfig.fpr))
+            logFunction = logging.debug
+            if i % 100 == 0:
+                logFunction = logging.info
+                logFunction("%d acceptances, %d rejections since last report" %(acceptances, rejections))
+                acceptances = 0
+                rejections = 0
+            logFunction("Iteration %d" % i)
+            result = self.iteration()
+            if result:
+                acceptances += 1
+            else:
+                rejections += 1
+            logFunction("Rates TPR: %f FPR: %f" %(self.currentConfig.tpr, self.currentConfig.fpr))
+            
         
     def iteration(self):
         """ Perform an iteration of the optimiser
@@ -49,8 +62,8 @@ class ClassifierOptimiser(object):
             sourceConfig = self.archive.randomMember()
         proposal = sourceConfig.perturb()
         if self.archive.updateWith(proposal):
-            logging.debug("Accepting solution")
             self.currentConfig = proposal
+            return True
         else:
-            logging.debug("Rejecting solution")
+            return False
         

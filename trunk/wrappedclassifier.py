@@ -17,6 +17,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+import logging
+
 class WrappedClassifier(object):
     """ This wraps a classifier in enough MOO to allow it to be optimised
         by the ClassifierOptimiser.
@@ -48,10 +50,12 @@ class WrappedClassifier(object):
             type(results[i])
             self.confusion[self.targets[i]][results[i]] += 1
         self.tpr = self.confusion[1][1]/sum(self.confusion[1])
-        self.fpr = self.confusion[0][0]/sum(self.confusion[0])
+        self.fpr = self.confusion[0][1]/sum(self.confusion[0])
+        logging.debug("Confusion: %s, tpr %f, fpr %f" % (str(self.confusion),self.tpr,self.fpr))
         
     def dominates(self, other):
         """ Test for domination of other.
             Returns True where tpr/fpr are equivalent.
         """
-        return self.tpr >= other.tpr and self.fpr <= other.fpr
+        #return self.tpr >= other.tpr and self.fpr <= other.fpr
+        return not self.tpr < other.tpr and not self.fpr > other.fpr
