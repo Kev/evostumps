@@ -129,4 +129,7 @@ class StumpsClassifier(object):
     def __str__(self):
         """ str(object) overload.
         """
-        return "Weights: %s\nStumps: %s" %(str(self.weights), str(self.stumps))
+        stumpStrings = []
+        for stump in self.stumps:
+            stumpStrings.append(str(stump))
+        return "Weights: %s\nStumps: %s" %(str(self.weights), str(stumpStrings))

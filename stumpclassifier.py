@@ -68,10 +68,10 @@ class StumpClassifier(object):
         if random.random() < 0.5:
             newThreshold = -1
             while newThreshold < 0 or newThreshold > 1:
-                newThreshold = self.threshold + self.laplacian() * 0.1
+                newThreshold = self.threshold + self.laplacian() #* 0.1
             self.threshold = newThreshold
         else:
-            self.beta += self.laplacian() * 0.1
+            self.beta += self.laplacian() #* 0.1
             
     def laplacian(self):
         sample = math.log(random.random());
@@ -107,9 +107,9 @@ class StumpClassifier(object):
             operator += ">"
         else:
             operator += "<"
-        return "(Hard) %s %f" %(operator, self.threshold)
+        return "(Hard) %s %f Enabled: %s" %(operator, self.threshold, str(self.enabled))
 
     def _strSoft(self):
         """ Overload for str(obj) on soft stumps.
         """
-        return "(Soft) Beta:%f Threshold:%f" % (self.beta, self.threshold)
+        return "(Soft) Beta:%f Threshold:%f Enabled: %s" % (self.beta, self.threshold, str(self.enabled))

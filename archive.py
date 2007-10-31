@@ -40,6 +40,7 @@ class Archive(object):
             if newSolution.dominates(solution):
                 self.solutions.remove(solution)
         self.solutions.append(newSolution)
+        return True
 
     def randomMember(self):
         """ Returns a random member of the archive
