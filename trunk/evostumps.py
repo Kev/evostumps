@@ -26,6 +26,15 @@ from stumpsclassifier import StumpsClassifier
 from wrappedclassifier import WrappedClassifier
 from classifieroptimiser import ClassifierOptimiser
 
+def plotArchiveList(list):
+    x=[]
+    y=[]
+    for pair in list:
+        x.append(pair[1])
+        y.append(pair[0])
+    import matplotlib.pylab
+    matplotlib.pylab.plot(x, y, 'rx')
+    matplotlib.pylab.show()
 
 class EvoStumps(object):
     """ EvoStumps is a stumps classifier tuned through an evolutionary algorithm.
