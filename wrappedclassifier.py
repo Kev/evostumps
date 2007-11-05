@@ -46,8 +46,8 @@ class WrappedClassifier(object):
         results = self.classifier.classify(self.inputs)
         self.confusion = [[0,0],[0,0]]
         for i in range(0,len(results)):
-            type(self.targets[i])
-            type(results[i])
+            #type(self.targets[i])
+            #type(results[i])
             self.confusion[self.targets[i]][results[i]] += 1
         self.tpr = self.confusion[1][1]/sum(self.confusion[1])
         self.fpr = self.confusion[0][1]/sum(self.confusion[0])

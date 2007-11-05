@@ -20,6 +20,7 @@
 import copy
 import logging 
 from stumpclassifier import StumpClassifier
+from kevrandom import KevRandom
 import random
 import sets
 
@@ -84,6 +85,12 @@ class StumpsClassifier(object):
     def _perturbInPlace(self):
         """ Perturbs the object in place. Private call.
         """
+        if random.random() < 0.2:
+            diff = 1
+            kevRandom = KevRandom()
+            while self.threshold + diff >= 1 or self.threshold - diff <= 0:
+                diff = kevRandom.laplacian() * 0.1
+            self.threshold += diff
         for i in range(len(self.stumps)):
             stump = self.stumps[i]
             if random.random() <= 0.05:

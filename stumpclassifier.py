@@ -19,6 +19,8 @@
 
 import math
 import random
+import logging
+from kevrandom import KevRandom
 
 class StumpClassifier(object):
     """ Stump Classifier
@@ -60,25 +62,22 @@ class StumpClassifier(object):
     def softClassify(self, inputValue):
         """ Performs a soft classification on the provided value.
         """
-        return 1.0 / (1 + math.e ** (-self.beta * (inputValue - self.threshold)))
+        result = 1.0 / (1 + math.e ** (-self.beta * (inputValue - self.threshold)))
+        logging.debug("Classification of %f on value %f for feature %d" %(result, inputValue, self.feature))
+        return result
     
     def _perturbInPlaceSoft(self):
         """ Perturbs a soft stump in place.
         """
+        kevRandom = KevRandom()
         if random.random() < 0.5:
             newThreshold = -1
             while newThreshold < 0 or newThreshold > 1:
-                newThreshold = self.threshold + self.laplacian() #* 0.1
+                newThreshold = self.threshold + kevRandom.laplacian() #* 0.1
             self.threshold = newThreshold
         else:
-            self.beta += self.laplacian() #* 0.1
+            self.beta += kevRandom.laplacian() #* 0.1
             
-    def laplacian(self):
-        sample = math.log(random.random());
-    	if random.random() < 0.5:
-    		sample *= -1.0
-    	return sample;
-    
     def _perturbInPlaceHard(self):
         """ Perturbs a hard stump in place.
         """
