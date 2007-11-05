@@ -51,6 +51,7 @@ if __name__ == '__main__':
     optp.add_option("-t","--training", dest="trainingfile", default="training.csv", help="File containing CSV training data. Final column should contain targets.")
     optp.add_option("-i","--iteratiosn", dest="iterations", default="100", help="Number of iterations to optimise the classifier.")
     optp.add_option("-s","--test", dest="testfile", default="test.csv", help="File containing CSV test data. Same format as training.")
+    optp.add_option('-p','--plot', help='Plot the archive', action='store_const', dest='plot', const=True, default=False)
     opts,args = optp.parse_args()
     
     logging.basicConfig(level=opts.loglevel, format='%(levelname)-8s %(message)s')
@@ -76,4 +77,10 @@ if __name__ == '__main__':
     logging.debug("EOF: %s" % opts.trainingfile)
     logging.debug("Seeding RNG")
     system = EvoStumps(inputs, outputs, int(opts.iterations))
+    if opts.plot:
+        import matplotlib.pylab
+        x = system.optimiser.archive.fpr()
+        y = system.optimiser.archive.tpr()
+        matplotlib.pylab.plot(x, y, 'rx')
+        matplotlib.pylab.show()
     logging.info("Bye")

@@ -39,19 +39,19 @@ class ClassifierOptimiser(object):
         rejections = 0
         for i in range(iterations):
             logFunction = logging.debug
-            if i % 100 == 0:
+            if i % 100 == 0 or i == iterations - 1:
                 logFunction = logging.info
                 logFunction("%d acceptances, %d rejections since last report" %(acceptances, rejections))
+                logFunction("Archive: %s" % str(self.archive))
                 acceptances = 0
                 rejections = 0
-            logFunction("Iteration %d" % i)
             result = self.iteration()
             if result:
                 acceptances += 1
             else:
                 rejections += 1
             logFunction("Rates TPR: %f FPR: %f" %(self.currentConfig.tpr, self.currentConfig.fpr))
-            
+            logFunction("Iteration %d" % i)
         
     def iteration(self):
         """ Perform an iteration of the optimiser

@@ -46,3 +46,27 @@ class Archive(object):
         """ Returns a random member of the archive
         """
         return self.solutions[random.randint(0,len(self.solutions) - 1)]
+        
+    def __str__(self):
+        """ str(object) overload.
+        """
+        rocList = []
+        for solution in self.solutions:
+            rocList.append([solution.tpr, solution.fpr])
+        return str(rocList)
+       
+    def tpr(self):
+        """ List of all TPR.
+        """
+        tpr = []
+        for solution in self.solutions:
+            tpr.append(solution.tpr)
+        return tpr
+        
+    def fpr(self):
+        """ List of all FPR.
+        """
+        fpr = []
+        for solution in self.solutions:
+            fpr.append(solution.fpr)
+        return fpr
