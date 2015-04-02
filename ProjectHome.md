@@ -1,0 +1,1 @@
+A classification library and application written in Python using multi-objective evolutionary optimisation of decision stumps.
